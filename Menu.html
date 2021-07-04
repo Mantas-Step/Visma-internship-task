@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Pizza Menu</title>
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body>
+        <div class="page_name">
+            <h1>PIZZA MENU</h1>
+        </div>
+        <div class="main">
+            <div class=sort_button_div>
+                <select id="sort" class="sort_button">
+                    <option value="sortName">Sort by name</option>
+                    <option value="sortHeat">Sort by heat</option>
+                    <option value="sortPrice">Sort by price</option>
+                </select>
+            </div>
+            <div class="info" id="info"></div>
+            <div class="button-container">
+            <a class="add-pizza" href="index.html">Add Pizza Form</a>
+            </div>
+        </div>
+        
+        <script>
+            
+            var heatlevels = [];
+            var prices = [];
+            var ids = [];
+            
+            const classes = [
+                'image',
+                'name',
+                'heat',
+                'price',
+                'toppings'
+            ];
+            
+            var x = 0;
+            
+            for (let i = 0; i < sessionStorage.length; i++){
+                const key = sessionStorage.key(i);
+                var infoString = sessionStorage.getItem(key);
+                var obj = JSON.parse(infoString);
+                var image = obj.image;
+                var name = obj.name;
+                var heat = obj.heat;
+                var price = obj.price;
+                var toppings = obj.toppings;
+                
+                let pizzas = [
+                    image,
+                    name,
+                    heat,
+                    price,
+                    toppings
+                ];
+                
+                div = document.createElement('div');
+                div.className = ("list");
+                div.setAttribute("id", name);
+                document.getElementById('info').appendChild(div);
+                
+                
+                ul = document.createElement('ul');
+                ul.setAttribute("id", 'Pizzas_list');
+                document.getElementById(name).appendChild(ul);
+                
+                pizzas.forEach(function (pizza) {
+                    var iterator = classes.values();
+                    let li = document.createElement('li');
+                    li.setAttribute('class', classes[x]);
+                    li.id = classes[x] + "_id";
+                    ul.appendChild(li);
+                    li.innerHTML += pizza;
+                    if (classes[x] == 'image'){
+                        li.innerHTML += "<img src=" + pizza + ">";
+                    }
+                    if (classes[x] == 'heat'){
+                        for (let j = 0; j < pizza; j++){
+                            li.innerHTML += "<img src='images/hot-pepper.png'>";
+                        }
+                        heatlevels.push(pizza);
+                    }
+                    if (classes[x] == 'price'){
+                        prices.push(pizza);
+                    }
+                    if (classes[x] == 'name'){
+                        ids.push(pizza);
+                    }
+                    x = x + 1;
+                });
+                    
+                delete_button = document.createElement("button");
+                delete_button.className = ("delete");
+                delete_button.setAttribute("id", name);
+                delete_button.setAttribute("onclick", "delete_function()");
+                delete_button.textContent = "Delete";
+                document.getElementById(name).appendChild(delete_button);
+
+                x = 0;
+            }
+            
+            var delete_div = document.getElementById(name);
+            function delete_function(){
+                var conf = confirm("Are you sure you want to delete this?");
+                if (conf == true){
+                    sessionStorage.removeItem(name);
+                    location.reload();
+                }
+            }
+            
+            var sort_selection = document.getElementById("sort");
+            sort_selection.addEventListener("change", function() {
+                if (sort_selection.value == "sortName")
+                {
+                    sortName("info");
+                } else if (sort_selection.value == "sortHeat")
+                {
+                    sortHeat("info");
+                } else if (sort_selection.value == "sortPrice")
+                {
+                    sortPrice("info");
+                }
+            });
+            
+            var sort_ids = [];
+            for (let i = 0; i < ids.length; i++){
+                var price_num = prices[i].split(" ")
+                sort_ids.push([ids[i], heatlevels[i], parseFloat(price_num[0])])
+            }
+            
+            sortName("info");
+            
+            function sortName(parentId){
+                var parent = document.getElementById(parentId);
+                sort_ids.sort(function(a, b) {return (a[0] < b[0]) ? -1 : 1});
+                for (let i = 0; i < sort_ids.length; i++) {
+                    parent.appendChild(document.getElementById(sort_ids[i][0]));
+                }
+            }
+            
+            function sortHeat(parentId){
+                var parent = document.getElementById(parentId);
+                sort_ids.sort(function(a, b) {return (a[1] < b[1]) ? -1 : 1});
+                for (let i = 0; i < sort_ids.length; i++) {
+                    parent.appendChild(document.getElementById(sort_ids[i][0]));
+                }
+            }
+            
+            function sortPrice(parentId){
+                var parent = document.getElementById(parentId);
+                sort_ids.sort(function(a, b) {return (a[2] < b[2]) ? -1 : 1});
+                for (let i = 0; i < sort_ids.length; i++) {
+                    parent.appendChild(document.getElementById(sort_ids[i][0]));
+                }
+                console.log(sort_ids);
+            }
+            
+        </script>
+        
+    </body>
+</html>
